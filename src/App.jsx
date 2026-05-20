@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import './App.css'
 import {db} from "../config/firebase.js";
-import { collection, getDocs, addDoc, onSnapshot, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
 function App() {
 
     const [title, setTitle] = useState("");
@@ -9,28 +9,21 @@ function App() {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        const allPosts = onSnapshot(collection(db, "posts"), (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            data.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-            setPosts(data);
-        });
+        // 1. Maak een query die direct op de database sorteert (desc = descending / nieuwste bovenaan)
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-        return () => allPosts();
+        // 2. Luister naar de query en zet de data direct in de state
+        return onSnapshot(q, (snapshot) => {
+            setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
     }, []);
-
-    async function getUsers() {
-        const querySnapshot = await getDocs(collection(db, "users"));
-        querySnapshot.forEach((doc) => {
-            console.log(`${doc.id} => ${doc.data().isAdmin}`); // doc.data() returns the document's fields as an object
-        });
-    }
 
     async function addPost() {
         try {
             const newPost = {
                 title: title,
                 message: message,
-                createdAt: serverTimestamp(),
+                createdAt: Date.now()
             };
 
             await addDoc(collection(db, "posts"), newPost);
@@ -74,16 +67,13 @@ function App() {
 
                 <h1>Alle posts</h1>
                 {posts.map((post) => {
-                    const postDate = post.createdAt?.toDate
-                        ? post.createdAt.toDate()
-                        : post.createdAt ? new Date(post.createdAt) : null;
-
+                    const postDate = new Date(post.createdAt)
                     return (
                         <div key={post.id}>
                             <h3>{post.title}</h3>
                             <p>{post.message}</p>
-                            <p><strong>Datum:</strong> {postDate ? postDate.toLocaleDateString() : "Onbekend"}</p>
-                            <p><strong>Tijd:</strong> {postDate ? postDate.toLocaleTimeString() : "Onbekend"}</p>
+                            <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
+                            <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
                             <button onClick={() => deletePost(post.id)}>
                                 Verwijder post
                             </button>
