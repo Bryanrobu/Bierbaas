@@ -52,6 +52,7 @@ function App() {
     }
 
         return (
+
             <>
                 <input
                     type="text"
@@ -72,22 +73,23 @@ function App() {
                 </button>
 
                 <h1>Alle posts</h1>
-                {posts.map((post) => (
-                    <div key={post.id}>
-                        <h3>{post.title}</h3>
-                        <p>{post.message}</p>
-                        <p>
-                            {post.createdAt?.toDate
-                                ? post.createdAt.toDate().toLocaleString()
-                                : post.createdAt
-                                    ? new Date(post.createdAt).toLocaleString()
-                                    : "Geen datum en tijd gevonden"}
-                        </p>
-                        <button onClick={() => deletePost(post.id)}>
-                            Verwijder post
-                        </button>
-                    </div>
-                ))}
+                {posts.map((post) => {
+                    const postDate = post.createdAt?.toDate
+                        ? post.createdAt.toDate()
+                        : post.createdAt ? new Date(post.createdAt) : null;
+
+                    return (
+                        <div key={post.id}>
+                            <h3>{post.title}</h3>
+                            <p>{post.message}</p>
+                            <p><strong>Datum:</strong> {postDate ? postDate.toLocaleDateString() : "Onbekend"}</p>
+                            <p><strong>Tijd:</strong> {postDate ? postDate.toLocaleTimeString() : "Onbekend"}</p>
+                            <button onClick={() => deletePost(post.id)}>
+                                Verwijder post
+                            </button>
+                        </div>
+                    );
+                })}
             </>
         )
 }
