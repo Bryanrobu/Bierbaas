@@ -76,6 +76,13 @@ function App() {
                     <div key={post.id}>
                         <h3>{post.title}</h3>
                         <p>{post.message}</p>
+                        <p>
+                            {post.createdAt?.toDate
+                                ? post.createdAt.toDate().toLocaleString()
+                                : post.createdAt
+                                    ? new Date(post.createdAt).toLocaleString()
+                                    : "Geen datum en tijd gevonden"}
+                        </p>
                         <button onClick={() => deletePost(post.id)}>
                             Verwijder post
                         </button>
