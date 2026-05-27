@@ -58,7 +58,7 @@
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/review" element={<Review />} />
-                            <Route path="/kaart" element={<Kaart />} />
+                            <Route path="/kaart" element={<Kaart locaties={posts} />} />
                         </Routes>
                     </main>
                     <input
