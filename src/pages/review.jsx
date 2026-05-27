@@ -5,8 +5,6 @@ import {addDoc, collection} from 'firebase/firestore';
 import BeerAutocomplete from '../Components/BeerAutocomplete.jsx';
 
 export default function Review() {
-
-    const [, setSelectedBeer] = useState("");
     const [beer, setBeer] = useState("");
     const [message, setMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +70,8 @@ export default function Review() {
 
     return <>
         <BeerAutocomplete
-            onSelect={(bierNaam) => setSelectedBeer(bierNaam)}
+            value={beer}
+            onSelect={(selected) => setBeer(selected)}
         />
 
         <input

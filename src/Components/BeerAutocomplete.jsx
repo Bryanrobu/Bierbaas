@@ -1,10 +1,17 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import './BeerAutoComplete.css';
 
-export default function BeerAutocomplete({onSelect}) {
+export default function BeerAutocomplete({value, onSelect}) {
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
+
+    useEffect(() => {
+        if (value === "") {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setQuery("");
+        }
+    }, [value]);
 
     const BEERS = [// Amstel
         "Amstel Pilsener", "Amstel Radler 2.0%", "Amstel Radler 0.0%", "Amstel Bock", "Amstel Blond", "Amstel 0.0",
