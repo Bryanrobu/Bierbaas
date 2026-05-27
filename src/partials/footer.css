@@ -1,0 +1,74 @@
+/* ── Footer nav ── */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 80px;
+  background: radial-gradient(ellipse at 50% 120%, #2e1205 0%, #1a0905 60%, #0f0503 100%);
+  border-top: 2px solid #e8890c;
+  box-shadow:
+    0 -2px 18px 0 rgba(232, 137, 12, 0.2),
+    inset 0 1px 0 rgba(232, 137, 12, 0.06);
+  z-index: 100;
+}
+
+/* ── Nav item ── */
+.footer-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px 8px 8px;
+  border-radius: 14px;
+  transition: opacity 0.15s ease, background 0.2s ease;
+}
+
+.footer-item:hover {
+  opacity: 0.85;
+}
+
+/* ── Icon wrapper ── */
+.footer-icon {
+  width: 26px;
+  height: 26px;
+  color: #7a5a3a;
+  transition: color 0.2s ease;
+}
+
+.footer-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Label ── */
+.footer-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #7a5a3a;
+  transition: color 0.2s ease;
+}
+
+/* ── Active state ── */
+.footer-item--active {
+  background: rgba(232, 137, 12, 0.12);
+}
+
+.footer-item--active .footer-icon {
+  color: #e8890c;
+}
+
+.footer-item--active .footer-label {
+  color: #e8890c;
+}
