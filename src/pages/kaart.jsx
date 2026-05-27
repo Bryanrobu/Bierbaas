@@ -1,28 +1,84 @@
-import { useEffect, useState } from "react";
-import {MapContainer, TileLayer, CircleMarker, Popup, useMap} from "react-leaflet";
+import { useEffect, useState, useRef } from "react";
+import {MapContainer, TileLayer, Marker, Popup, useMap} from "react-leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
+const Default_Center = [52.156, 5.387];
 
 function SetView({ coords }) {
   const map = useMap();
+  const centered = useRef(false);
+
   useEffect(() => {
-    map.setView(coords, 13);
+    if (!centered.current){
+      map.setView(coords, 13);
+      centered.current = true;
+    }
   }, [coords]);
   return null;
 }
 
+function CreatePinIcon(color, size = 32){
+  return L.divIcon({
+    className: "",
+    html: `
+      <svg width="${size}" height="${size * 1.4}" viewBox="0 0 32 45" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="14" fill="${color}" stroke="#1a0905" stroke-width="2"/>
+        <polygon points="9,26 23,26 16,44" fill="${color}"/>
+      </svg>
+    `,
+    iconSize: [size, size * 1.4],
+    iconAnchor: [size / 2, size * 1.4],
+    popupAnchor: [0, -size * 1.4],
+  });
+}
+
+function PinMarker({ position, color, children}){
+  const [hoverd, setHoverd] = useState(false);
+  const [selected, setSelected] = useState(false);
+
+  const size = hoverd || selected ? 44 : 32;
+
+  return (
+    <Marker
+      position={position}
+      icon={CreatePinIcon(color, size)}
+      eventHandlers={{
+        mouseover: () => setHoverd(true),
+        mouseout: () => setHoverd(false),
+        click: () => setSelected(prev => !prev),
+        popupclose: () => setSelected(false),
+      }}
+    >
+      {children}
+    </Marker>
+  );
+}
+
 export default function Kaart({ locaties = [] }) {
-  const [position, setPosition] = useState([52.156, 5.387]); // fallback
+  const [position, setPosition] = useState(null);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
+    const samples = [];
+    const id = navigator.geolocation.watchPosition(
+      (pos) => {
+        samples.push([pos.coords.latitude, pos.coords.longitude]);
+        const recent = samples.slice(-5);
+        const avg = [
+          recent.reduce((sum, p) => sum + p[0], 0) / recent.length,
+          recent.reduce((sum, p) => sum + p[1], 0) / recent.length,
+        ];
+        setPosition(avg);
+      },
       (err) => console.warn("Locatie geweigerd:", err),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
+    return () => navigator.geolocation.clearWatch(id);
   }, []);
 
   return (
     <MapContainer
-      center={position}
+      center={Default_Center}
       zoom={13}
       style={{ height: "500px", width: "100%" }}
     >
@@ -30,39 +86,29 @@ export default function Kaart({ locaties = [] }) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
-      <SetView coords={position} />
 
-      {/* Jouw locatie pin */}
-      <CircleMarker
-        center={position}
-        radius={5}
-        pathOptions={{
-          color: "#0055ff", // rand kleur
-          fillColor: "#0055ff", // vul kleur
-          fillOpacity: 1,
-        }}
-      />
+      {position && <SetView coords={position} />}
 
-      {/* Locaties van de database */}
+      {/* Jouw locatie */}
+      {position && (
+        <PinMarker position={position} color="#0055ff" />
+      )}
+
+      {/* Database locaties */}
       {locaties
         .filter((l) => l.location?.lat && l.location?.lng)
         .map((locatie) => (
-          <CircleMarker
+          <PinMarker
             key={locatie.id}
-            center={[locatie.location.lat, locatie.location.lng]}
-            radius={8}
-            pathOptions={{
-              color: "#E24A4A",
-              fillColor: "#E24A4A",
-              fillOpacity: 1,
-            }}
+            position={[locatie.location.lat, locatie.location.lng]}
+            color="#e8890c"
           >
             <Popup>
               {locatie.fullAddress}
               <br />
               {locatie.title}
-              </Popup>
-          </CircleMarker>
+            </Popup>
+          </PinMarker>
         ))}
     </MapContainer>
   );
