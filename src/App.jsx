@@ -1,27 +1,25 @@
-    import './App.css'
-    import { Routes, Route } from 'react-router-dom'
+import './App.css'
+import {Route, Routes} from 'react-router-dom'
 
-    import Header from "./partials/header.jsx"
-    import Footer from "./partials/footer.jsx"
-    import Home from "./pages/home.jsx"
-    import Review from "./pages/review.jsx"
-    import Kaart from "./pages/kaart.jsx"
+import Header from "./partials/header.jsx"
+import Footer from "./partials/footer.jsx"
+import Home from "./pages/home.jsx"
+import Review from "./pages/review.jsx"
+import Kaart from "./pages/kaart.jsx"
 
-    function App() {
-            return (
+function App() {
+    return (<>
+        <Header/>
+        <main>
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/review" element={<Review/>}/>
+                <Route path="/kaart" element={<Kaart/>}/>
+            </Routes>
+        </main>
 
-                <>
-                    <Header />
-                    <main>
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/review" element={<Review />} />
-                            <Route path="/kaart" element={<Kaart />} />
-                        </Routes>
-                    </main>
+        <Footer/>
+    </>)
+}
 
-                    <Footer />
-                </>
-            )
-    }
-        export default App
+export default App

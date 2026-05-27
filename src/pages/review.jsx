@@ -1,48 +1,103 @@
 import {useState} from 'react'
 import '../App.css'
 import {db} from "../../config/firebase.js";
-import { collection, addDoc} from 'firebase/firestore';
+import {addDoc, collection} from 'firebase/firestore';
+import BeerAutocomplete from '../Components/BeerAutocomplete.jsx';
 
 export default function Review() {
 
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
+    const [, setSelectedBeer] = useState("");
+    const [beer, setBeer] = useState("");
+    const [message, setMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [street, setStreet] = useState("");
+    const [city, setCity] = useState("");
 
-  async function addPost() {
-    try {
-      const newPost = {
-        title: title,
-        message: message,
-        createdAt: Date.now()
-      };
+    async function getCoordinatesFromAddress(searchAddress) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchAddress)}`);
+            const data = await response.json();
 
-      await addDoc(collection(db, "posts"), newPost);
-
-      console.log("title: ", newPost.title);
-      console.log("message: ", newPost.message);
-
-    } catch (e) {
-      console.error("Error adding document: ", e);
+            if (data && data.length > 0) {
+                return {
+                    lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon)
+                };
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error("Fout bij ophalen coördinaten:", error);
+            return null;
+        }
     }
-  }
 
-  return <>
-    <input
-        type="text"
-        placeholder="Post Titel"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-    />
+    async function addPost() {
+        if (!beer || !message || !street || !city) {
+            alert("Vul a.u.b. alle velden in!");
+            return;
+        }
 
-    <input
-        type="text"
-        placeholder="Post Bericht"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-    />
+        setIsSubmitting(true);
+        try {
+            const fullAddressQuery = `${street}, ${city}`;
+            const coordinates = await getCoordinatesFromAddress(fullAddressQuery);
 
-    <button onClick={addPost}>
-      Klik om toe te voegen
-    </button>
-  </>
+            if (!coordinates) {
+                alert("We konden dit adres niet vinden. Probeer het specifieker in te voeren (bijv. straat, huisnummer, stad).");
+                setIsSubmitting(false);
+                return;
+            }
+
+            const newPost = {
+                beer: beer,
+                message: message,
+                fullAddress: fullAddressQuery,
+                location: coordinates,
+                createdAt: Date.now()
+            };
+
+            await addDoc(collection(db, "posts"), newPost);
+
+            setBeer("");
+            setMessage("");
+            setStreet("");
+            setCity("");
+
+        } catch (e) {
+            console.error("Fout bij toevoegen document: ", e);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return <>
+        <BeerAutocomplete
+            onSelect={(bierNaam) => setSelectedBeer(bierNaam)}
+        />
+
+        <input
+            type="text"
+            placeholder="Post Bericht"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+        />
+
+        <input
+            type="text"
+            placeholder="Straat en huisnummer (bijv. Dam 1)"
+            value={street}
+            onChange={(e) => setStreet(e.target.value)}
+        />
+
+        <input
+            type="text"
+            placeholder="Woonplaats (bijv. Amsterdam)"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+        />
+
+        <button onClick={addPost} disabled={isSubmitting}>
+            {isSubmitting ? "Laden..." : "Klik om toe te voegen"}
+        </button>
+    </>
 }

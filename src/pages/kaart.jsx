@@ -1,3 +1,3 @@
 export default function Kaart() {
-  return <div>Kaart</div>
+    return <div>Kaart</div>
 }
