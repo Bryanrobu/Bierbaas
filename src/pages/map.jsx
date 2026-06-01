@@ -1,13 +1,16 @@
 import { useEffect, useState, useRef } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../config/firebase.js";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "./css/kaart.css";
+import "./css/map.css";
 
 const Default_Center = [52.156, 5.387];
 
-{/* centeren van de kaart op jouw locatie en maar 1 keer */}
+{/* center the map on your location, only once */}
+
 function SetView({ coords }) {
   const map = useMap();
   const centered = useRef(false);
@@ -61,8 +64,16 @@ function PinMarker({ position, color, children }) {
 }
 
 
-export default function Kaart({ locaties = [] }) {
+export default function MapPage() {
   const [position, setPosition] = useState(null);
+  const [locaties, setLocaties] = useState([]);
+
+  {/* haalt de locaties uit de database */}
+  useEffect(() => {
+    return onSnapshot(collection(db, "posts"), (snapshot) => {
+      setLocaties(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+  }, []);
 
   {/* geeft locatie van gebruiker terug */}
   useEffect(() => {

@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 const NAV_ITEMS = [
   { id: 'home',   label: 'Home',   path: '/',       icon: 'M3 9.75L12 3l9 6.75V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.75z M9 22V12h6v10' },
   { id: 'review', label: 'Review', path: '/review', icon: 'M12 5v14 M5 12h14' },
-  { id: 'kaart',  label: 'Kaart',  path: '/kaart',  icon: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6 M9 3v15 M15 6v15' },
+  { id: 'map',    label: 'Map',    path: '/map',    icon: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6 M9 3v15 M15 6v15' },
 ];
 
 export default function Footer() {
