@@ -1,101 +1,25 @@
-    import {useState, useEffect} from 'react'
-    import './App.css'
-    import {db} from "../config/firebase.js";
-    import { collection, getDocs, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
-    import { Routes, Route } from 'react-router-dom'
+import './App.css'
+import {Route, Routes} from 'react-router-dom'
 
-    import Header from "./partials/header.jsx"
-    import Footer from "./partials/footer.jsx"
-    import Home from "./pages/home.jsx"
-    import Review from "./pages/review.jsx"
-    import Kaart from "./pages/kaart.jsx"
+import Header from "./partials/header.jsx"
+import Footer from "./partials/footer.jsx"
+import Home from "./pages/home.jsx"
+import Review from "./pages/review.jsx"
+import Kaart from "./pages/kaart.jsx"
 
-    function App() {
+function App() {
+    return (<>
+        <Header/>
+        <main>
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/review" element={<Review/>}/>
+                <Route path="/kaart" element={<Kaart/>}/>
+            </Routes>
+        </main>
 
-        const [title, setTitle] = useState("");
-        const [message, setMessage] = useState("");
-        const [posts, setPosts] = useState([]);
+        <Footer/>
+    </>)
+}
 
-        useEffect(() => {
-            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-
-            return onSnapshot(q, (snapshot) => {
-                setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            });
-        }, []);
-
-        async function addPost() {
-            try {
-                const newPost = {
-                    title: title,
-                    message: message,
-                    createdAt: Date.now()
-                };
-
-                await addDoc(collection(db, "posts"), newPost);
-
-                console.log("title: ", newPost.title);
-                console.log("message: ", newPost.message);
-
-            } catch (e) {
-                console.error("Error adding document: ", e);
-            }
-        }
-
-        async function deletePost(id) {
-            try {
-                await deleteDoc(doc(db, "posts", id));
-            } catch (e) {
-                console.error("Fout bij verwijderen: ", e);
-            }
-        }
-
-            return (
-
-                <>
-                    <Header />
-                    <main>
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/review" element={<Review />} />
-                            <Route path="/kaart" element={<Kaart />} />
-                        </Routes>
-                    </main>
-                    <input
-                        type="text"
-                        placeholder="Post Titel"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
-
-                    <input
-                        type="text"
-                        placeholder="Post Bericht"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                    />
-
-                    <button onClick={addPost}>
-                        Klik om toe te voegen
-                    </button>
-
-                    <h1>Alle posts</h1>
-                    {posts.map((post) => {
-                        const postDate = new Date(post.createdAt)
-                        return (
-                            <div key={post.id}>
-                                <h3>{post.title}</h3>
-                                <p>{post.message}</p>
-                                <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
-                                <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
-                                <button onClick={() => deletePost(post.id)}>
-                                    Verwijder post
-                                </button>
-                            </div>
-                        );
-                    })}
-                    <Footer />
-                </>
-            )
-    }
-        export default App
+export default App
