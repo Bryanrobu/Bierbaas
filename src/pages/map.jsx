@@ -20,7 +20,7 @@ function SetView({ coords }) {
       map.setView(coords, 13);
       centered.current = true;
     }
-  }, [coords]);
+  }, [coords, map]);
   return null;
 }
 
@@ -98,7 +98,7 @@ export default function MapPage() {
     <MapContainer
       center={Default_Center}
       zoom={13}
-      style={{ height: "500px", width: "100%" }}
+      style={{ height: "calc(100vh - 157px)", width: "100%" }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
