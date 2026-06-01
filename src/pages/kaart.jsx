@@ -1,16 +1,17 @@
 import { useEffect, useState, useRef } from "react";
-import {MapContainer, TileLayer, Marker, Popup, useMap} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 const Default_Center = [52.156, 5.387];
 
+{/* centeren van de kaart op jouw locatie en maar 1 keer */}
 function SetView({ coords }) {
   const map = useMap();
   const centered = useRef(false);
 
   useEffect(() => {
-    if (!centered.current){
+    if (!centered.current) {
       map.setView(coords, 13);
       centered.current = true;
     }
@@ -18,7 +19,8 @@ function SetView({ coords }) {
   return null;
 }
 
-function CreatePinIcon(color, size = 32){
+{/* maakt een svg pin icoon */}
+function CreatePinIcon(color, size = 32) {
   return L.divIcon({
     className: "",
     html: `
@@ -33,7 +35,8 @@ function CreatePinIcon(color, size = 32){
   });
 }
 
-function PinMarker({ position, color, children}){
+{/* zorgt voor het groter maken van de pins met hover en click */}
+function PinMarker({ position, color, children }) {
   const [hoverd, setHoverd] = useState(false);
   const [selected, setSelected] = useState(false);
 
@@ -46,7 +49,7 @@ function PinMarker({ position, color, children}){
       eventHandlers={{
         mouseover: () => setHoverd(true),
         mouseout: () => setHoverd(false),
-        click: () => setSelected(prev => !prev),
+        click: () => setSelected((prev) => !prev),
         popupclose: () => setSelected(false),
       }}
     >
@@ -55,9 +58,11 @@ function PinMarker({ position, color, children}){
   );
 }
 
+
 export default function Kaart({ locaties = [] }) {
   const [position, setPosition] = useState(null);
 
+  {/* geeft locatie van gebruiker terug */}
   useEffect(() => {
     const samples = [];
     const id = navigator.geolocation.watchPosition(
@@ -71,7 +76,7 @@ export default function Kaart({ locaties = [] }) {
         setPosition(avg);
       },
       (err) => console.warn("Locatie geweigerd:", err),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     );
     return () => navigator.geolocation.clearWatch(id);
   }, []);
@@ -90,9 +95,7 @@ export default function Kaart({ locaties = [] }) {
       {position && <SetView coords={position} />}
 
       {/* Jouw locatie */}
-      {position && (
-        <PinMarker position={position} color="#0055ff" />
-      )}
+      {position && <PinMarker position={position} color="#0055ff" />}
 
       {/* Database locaties */}
       {locaties
