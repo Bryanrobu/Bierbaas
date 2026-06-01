@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "./css/kaart.css";
 
 const Default_Center = [52.156, 5.387];
 
@@ -106,10 +108,12 @@ export default function Kaart({ locaties = [] }) {
             position={[locatie.location.lat, locatie.location.lng]}
             color="#e8890c"
           >
-            <Popup>
-              {locatie.fullAddress}
-              <br />
-              {locatie.title}
+            <Popup className="beer_map_popup">
+              <div className="popup_card">
+                <span className="popup_address">{locatie.fullAddress}</span>
+                <span className="popup_beer">{locatie.beer}</span>
+                <span className="popup_link" onClick={() => Navigate('')}>Bekijk review ➡️</span> {/* TODO nog linken */}
+              </div>
             </Popup>
           </PinMarker>
         ))}
