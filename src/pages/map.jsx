@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../config/firebase.js";
+import { auth, db } from "../../config/firebase.js";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./css/map.css";
+import {onAuthStateChanged} from "firebase/auth";
 
 const Default_Center = [52.156, 5.387];
 
@@ -67,13 +68,28 @@ function PinMarker({ position, color, children }) {
 export default function MapPage() {
   const [position, setPosition] = useState(null);
   const [locaties, setLocaties] = useState([]);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    // Listen for login/logout and save the ID
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUserId(user ? user.uid : null);
+    });
+    return () => unsubscribe();
+  }, []);
 
   {/* haalt de locaties uit de database */}
   useEffect(() => {
+
+    if (!userId) return;
+
     return onSnapshot(collection(db, "posts"), (snapshot) => {
-      setLocaties(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setLocaties(snapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(locatie => locatie.user === userId)
+      );
     });
-  }, []);
+  }, [userId]);
 
   {/* geeft locatie van gebruiker terug */}
   useEffect(() => {
