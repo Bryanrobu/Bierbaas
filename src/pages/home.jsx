@@ -37,7 +37,7 @@ export default function Home() {
             const postDate = new Date(post.createdAt)
             return (
                 <div key={post.id}>
-                    <h3>{post.title}</h3>
+                    <h3>{post.beer}</h3>
                     <p>{post.message}</p>
                     <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
                     <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>

@@ -1,17 +1,9 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import './BeerAutoComplete.css';
 
 export default function BeerAutocomplete({value, onSelect}) {
-    const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
-
-    useEffect(() => {
-        if (value === "") {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setQuery("");
-        }
-    }, [value]);
 
     const BEERS = [// Amstel
         "Amstel Pilsener", "Amstel Radler 2.0%", "Amstel Radler 0.0%", "Amstel Bock", "Amstel Blond", "Amstel 0.0",
@@ -72,7 +64,7 @@ export default function BeerAutocomplete({value, onSelect}) {
 
     const handleChange = (e) => {
         const userInput = e.target.value;
-        setQuery(userInput);
+        onSelect(userInput);
 
         if (userInput.length > 0) {
             const filtered = BEERS.filter(beer => beer.toLowerCase().includes(userInput.toLowerCase()));
@@ -84,12 +76,8 @@ export default function BeerAutocomplete({value, onSelect}) {
     };
 
     const handleSelect = (beerName) => {
-        setQuery(beerName);
+        onSelect(beerName);
         setShowDropdown(false);
-
-        if (onSelect) {
-            onSelect(beerName);
-        }
     };
 
     return (
@@ -97,8 +85,10 @@ export default function BeerAutocomplete({value, onSelect}) {
         <input
             type="text"
             placeholder="Naam van het biertje"
-            value={query}
+            value={value}
             onChange={handleChange}
+            onFocus={handleChange}
+            onBlur={() => setShowDropdown(false)}
         />
 
         {showDropdown && suggestions.length > 0 && (
@@ -106,7 +96,7 @@ export default function BeerAutocomplete({value, onSelect}) {
             {suggestions.map((beer, index) => (<li
                 key={index}
                 className="autocomplete-item"
-                onClick={() => handleSelect(beer)}
+                onMouseDown={() => handleSelect(beer)}
             >
                 {beer}
             </li>))}

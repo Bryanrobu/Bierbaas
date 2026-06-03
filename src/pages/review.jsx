@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import '../App.css'
+import './css/review.css'
 import {db} from "../../config/firebase.js";
 import {addDoc, collection} from 'firebase/firestore';
 import BeerAutocomplete from '../Components/BeerAutocomplete.jsx';
@@ -68,35 +69,41 @@ export default function Review() {
         }
     }
 
-    return <>
-        <BeerAutocomplete
-            value={beer}
-            onSelect={(selected) => setBeer(selected)}
-        />
+    return (
+        <div className="review-page">
+            <div className="review-form">
+                <h1 className="review-title">Nieuwe review</h1>
 
-        <input
-            type="text"
-            placeholder="Post Bericht"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-        />
+                <BeerAutocomplete
+                    value={beer}
+                    onSelect={(selected) => setBeer(selected)}
+                />
 
-        <input
-            type="text"
-            placeholder="Straat en huisnummer (bijv. Dam 1)"
-            value={street}
-            onChange={(e) => setStreet(e.target.value)}
-        />
+                <textarea
+                    className="review-message"
+                    placeholder="Post Bericht"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                />
 
-        <input
-            type="text"
-            placeholder="Woonplaats (bijv. Amsterdam)"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-        />
+                <input
+                    type="text"
+                    placeholder="Straat en huisnummer (bijv. Dam 1)"
+                    value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                />
 
-        <button onClick={addPost} disabled={isSubmitting}>
-            {isSubmitting ? "Laden..." : "Klik om toe te voegen"}
-        </button>
-    </>
+                <input
+                    type="text"
+                    placeholder="Woonplaats (bijv. Amsterdam)"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                />
+
+                <button className="review-button" onClick={addPost} disabled={isSubmitting}>
+                    {isSubmitting ? "Laden..." : "Klik om toe te voegen"}
+                </button>
+            </div>
+        </div>
+    );
 }
