@@ -1,9 +1,10 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import '../App.css'
 import './css/review.css'
-import {db} from "../../config/firebase.js";
+import {auth, db} from "../../config/firebase.js";
 import {addDoc, collection} from 'firebase/firestore';
 import BeerAutocomplete from '../Components/BeerAutocomplete.jsx';
+import {onAuthStateChanged} from "firebase/auth";
 
 export default function Review() {
     const [beer, setBeer] = useState("");
@@ -11,10 +12,17 @@ export default function Review() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
+    const [user, setUser] = useState("")
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            setUser(user);
+        });
+    }, []);
 
     async function getCoordinatesFromAddress(searchAddress) {
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchAddress)}`);
+            const response = await fetch(`https://eu1.locationiq.com/v1/search?key=pk.f7af2e73cb91925d60f1da88cf0f6715&format=json&q=${encodeURIComponent(searchAddress)}`);
             const data = await response.json();
 
             if (data && data.length > 0) {
@@ -52,7 +60,8 @@ export default function Review() {
                 message: message,
                 fullAddress: fullAddressQuery,
                 location: coordinates,
-                createdAt: Date.now()
+                createdAt: Date.now(),
+                user: user ? user.uid : "Anoniem"
             };
 
             await addDoc(collection(db, "posts"), newPost);
