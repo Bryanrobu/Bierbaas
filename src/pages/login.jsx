@@ -1,4 +1,6 @@
 import {useState} from 'react'
+import '../App.css'
+import './css/login.css'
 import {useNavigate} from 'react-router-dom'
 import {signInWithEmailAndPassword, signInWithPopup} from 'firebase/auth'
 import {auth, provider} from '../../config/firebase.js'
@@ -35,7 +37,7 @@ export default function Login() {
     }
 
     return (
-        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+        <div className="login-page">
             <h1>Inloggen</h1>
 
             <form onSubmit={handleSubmit}>

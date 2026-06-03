@@ -70,10 +70,6 @@
     background-clip: padding-box;
 }
 
-.review-form .autocomplete-container {
-    width: 100%;
-}
-
 .review-form .autocomplete-container input {
     width: 100%;
 }

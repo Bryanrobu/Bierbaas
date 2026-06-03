@@ -1,4 +1,6 @@
 import {useState} from 'react'
+import '../App.css'
+import './css/login.css'
 import {useNavigate} from 'react-router-dom'
 import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth'
 import {auth} from '../../config/firebase.js'
@@ -25,7 +27,7 @@ export default function Register() {
     }
 
     return (
-        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+        <div className="login-page">
             <h1>Registreren</h1>
 
             <form onSubmit={handleSubmit}>
