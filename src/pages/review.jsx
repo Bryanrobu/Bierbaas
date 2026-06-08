@@ -5,6 +5,7 @@ import {auth, db} from "../../config/firebase.js";
 import {addDoc, collection} from 'firebase/firestore';
 import BeerAutocomplete from '../Components/BeerAutocomplete.jsx';
 import {onAuthStateChanged} from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
 
 export default function Review() {
     const [beer, setBeer] = useState("");
@@ -13,12 +14,21 @@ export default function Review() {
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
     const [user, setUser] = useState("")
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            setUser(user);
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (!currentUser) {
+                navigate('/login');
+            } else {
+                setUser(currentUser);
+                setLoading(false);
+            }
         });
-    }, []);
+
+        return () => unsubscribe();
+    }, [navigate]);
 
     async function getCoordinatesFromAddress(searchAddress) {
         try {
@@ -61,7 +71,7 @@ export default function Review() {
                 fullAddress: fullAddressQuery,
                 location: coordinates,
                 createdAt: Date.now(),
-                user: user ? user.uid : "Anoniem"
+                user: user.uid
             };
 
             await addDoc(collection(db, "posts"), newPost);
