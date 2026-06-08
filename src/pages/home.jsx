@@ -41,9 +41,11 @@ export default function Home() {
                     <p>{post.message}</p>
                     <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
                     <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
-                    <button onClick={() => deletePost(post.id)}>
-                        Verwijder post
-                    </button>
+                    {user && user.uid === post.user && (
+                        <button onClick={() => deletePost(post.id)}>
+                            Verwijder post
+                        </button>
+                    )}
                 </div>
             );
         })}
