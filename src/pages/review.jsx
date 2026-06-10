@@ -16,6 +16,7 @@ export default function Review() {
     const [rating, setRating] = useState(0);
     const [user, setUser] = useState("")
     const [loading, setLoading] = useState(true);
+    const [publicity, setPublicity] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,7 +51,7 @@ export default function Review() {
     }
 
     async function addPost() {
-        if (!beer || !message || !street || !city || !rating) {
+        if (!beer || !message || !street || !city || !rating || publicity == null) {
             alert("Vul a.u.b. alle velden in!");
             return;
         }
@@ -73,7 +74,8 @@ export default function Review() {
                 location: coordinates,
                 createdAt: Date.now(),
                 rating: rating,
-                user: user.uid
+                user: user.uid,
+                publicity: publicity
             };
 
             await addDoc(collection(db, "posts"), newPost);
@@ -83,6 +85,7 @@ export default function Review() {
             setStreet("");
             setCity("");
             setRating(0);
+            setPublicity(null)
 
         } catch (e) {
             console.error("Fout bij toevoegen document: ", e);
@@ -130,6 +133,12 @@ export default function Review() {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                 />
+
+                <select value={publicity} onChange={(e) => setPublicity(e.target.value)}>
+                    <option>Openbaar of privé?</option>
+                    <option value={true}>Openbaar</option>
+                    <option value={false}>Prive</option>
+                </select>
 
                 <button className="review-button" onClick={addPost} disabled={isSubmitting}>
                     {isSubmitting ? "Laden..." : "Klik om toe te voegen"}
