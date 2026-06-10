@@ -38,6 +38,7 @@ export default function Home() {
             return (
                 <div key={post.id}>
                     <h3>{post.beer}</h3>
+                    <p>{"⭐".repeat(post.rating || 0)}</p>
                     <p>{post.message}</p>
                     <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
                     <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
