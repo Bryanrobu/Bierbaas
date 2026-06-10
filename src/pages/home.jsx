@@ -9,6 +9,7 @@ export default function Home() {
 
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
+    const [onlyMine, setonlyMine] = useState(false);
 
 
     async function deletePost(id) {
@@ -34,8 +35,18 @@ export default function Home() {
     return (
         <div className="home-page">
             {user && <h2>Hallo {user.displayName}</h2>}
-            <h1>Alle posts</h1>
-            {posts.map((post) => {
+            <div className="home-header">
+                <h1>{onlyMine ? "Mijn posts" : "Alle posts"}</h1>
+                {user && (
+                    <button className="filter-button" onClick={() => setonlyMine(!onlyMine)}>
+                        {onlyMine ? "Toon alle posts" : "Toon mijn posts"}
+                    </button>
+                )}
+            </div>
+            {posts
+                .filter((post) => post.publicity === "true" || post.user === user?.uid)
+                .filter((post) => !onlyMine || post.user === user?.uid)
+                .map((post) => {
                 const postDate = new Date(post.createdAt)
                 return (
                     <div className="post-card" key={post.id}>
