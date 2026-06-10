@@ -4,12 +4,14 @@ import './css/home.css'
 import {auth, db} from "../../config/firebase.js";
 import {collection, deleteDoc, doc, onSnapshot, orderBy, query} from 'firebase/firestore';
 import {onAuthStateChanged} from 'firebase/auth';
+import {useLocation} from 'react-router-dom';
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
   const [search, setSearch] = useState("");
-  const [onlyMine, setonlyMine] = useState(false);
+  const location = useLocation();
+  const [onlyMine, setonlyMine] = useState(location.state?.onlyMine || false);
 
   async function deletePost(id) {
     try {
