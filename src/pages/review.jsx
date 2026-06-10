@@ -13,8 +13,10 @@ export default function Review() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
+    const [rating, setRating] = useState(0);
     const [user, setUser] = useState("")
     const [loading, setLoading] = useState(true);
+    const [publicity, setPublicity] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,7 +51,7 @@ export default function Review() {
     }
 
     async function addPost() {
-        if (!beer || !message || !street || !city) {
+        if (!beer || !message || !street || !city || !rating || publicity == null) {
             alert("Vul a.u.b. alle velden in!");
             return;
         }
@@ -71,7 +73,9 @@ export default function Review() {
                 fullAddress: fullAddressQuery,
                 location: coordinates,
                 createdAt: Date.now(),
-                user: user.uid
+                rating: rating,
+                user: user.uid,
+                publicity: publicity
             };
 
             await addDoc(collection(db, "posts"), newPost);
@@ -80,6 +84,8 @@ export default function Review() {
             setMessage("");
             setStreet("");
             setCity("");
+            setRating(0);
+            setPublicity(null)
 
         } catch (e) {
             console.error("Fout bij toevoegen document: ", e);
@@ -97,6 +103,15 @@ export default function Review() {
                     value={beer}
                     onSelect={(selected) => setBeer(selected)}
                 />
+
+                <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+                    <option value="0">Kies een rating</option>
+                    <option value="1">⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                </select>
 
                 <textarea
                     className="review-message"
@@ -118,6 +133,12 @@ export default function Review() {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                 />
+
+                <select value={publicity} onChange={(e) => setPublicity(e.target.value)}>
+                    <option>Openbaar of privé?</option>
+                    <option value={true}>Openbaar</option>
+                    <option value={false}>Prive</option>
+                </select>
 
                 <button className="review-button" onClick={addPost} disabled={isSubmitting}>
                     {isSubmitting ? "Laden..." : "Klik om toe te voegen"}
