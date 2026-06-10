@@ -77,3 +77,24 @@
     background: #c0392b;
     color: #f0e0c0;
 }
+
+.home-page input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    background: #1a0905;
+    border: 1px solid #e8890c;
+    border-radius: 8px;
+    color: #f0e0c0;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.home-page input[type="text"]::placeholder {
+    color: #a0784a;
+}
+
+.home-page input[type="text"]:focus {
+    border-color: #f5a623 ;
+}
