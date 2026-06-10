@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
 import '../App.css'
+import './css/home.css'
 import {auth, db} from "../../config/firebase.js";
 import {collection, deleteDoc, doc, onSnapshot, orderBy, query} from 'firebase/firestore';
 import {onAuthStateChanged} from 'firebase/auth';
@@ -8,6 +9,7 @@ export default function Home() {
 
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
+    const [onlyMine, setonlyMine] = useState(false);
 
 
     async function deletePost(id) {
@@ -30,24 +32,37 @@ export default function Home() {
         });
     }, []);
 
-    return <>
-        {user && <h2>Hallo {user.displayName}</h2>}
-        <h1>Alle posts</h1>
-        {posts.map((post) => {
-            const postDate = new Date(post.createdAt)
-            return (
-                <div key={post.id}>
-                    <h3>{post.beer}</h3>
-                    <p>{post.message}</p>
-                    <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
-                    <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
-                    {user && user.uid === post.user && (
-                        <button onClick={() => deletePost(post.id)}>
-                            Verwijder post
-                        </button>
-                    )}
-                </div>
-            );
-        })}
-    </>
+    return (
+        <div className="home-page">
+            {user && <h2>Hallo {user.displayName}</h2>}
+            <div className="home-header">
+                <h1>{onlyMine ? "Mijn posts" : "Alle posts"}</h1>
+                {user && (
+                    <button className="filter-button" onClick={() => setonlyMine(!onlyMine)}>
+                        {onlyMine ? "Toon alle posts" : "Toon mijn posts"}
+                    </button>
+                )}
+            </div>
+            {posts
+                .filter((post) => post.publicity === "true" || post.user === user?.uid)
+                .filter((post) => !onlyMine || post.user === user?.uid)
+                .map((post) => {
+                const postDate = new Date(post.createdAt)
+                return (
+                    <div className="post-card" key={post.id}>
+                        <h3>{post.beer}</h3>
+                        <p>{"⭐".repeat(post.rating || 0)}</p>
+                        <p>{post.message}</p>
+                        <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
+                        <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
+                        {user && user.uid === post.user && (
+                            <button onClick={() => deletePost(post.id)}>
+                                Verwijder post
+                            </button>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    )
 }
