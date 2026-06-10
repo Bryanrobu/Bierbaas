@@ -82,6 +82,12 @@
     border-color: #f5a623;
 }
 
+.review-form select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
 .review-button {
     margin-top: 6px;
     padding: 12px;
