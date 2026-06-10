@@ -69,6 +69,7 @@ export default function MapPage() {
   const [position, setPosition] = useState(null);
   const [locaties, setLocaties] = useState([]);
   const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Listen for login/logout and save the ID
@@ -139,7 +140,8 @@ export default function MapPage() {
               <div className="popup_card">
                 <span className="popup_address">{locatie.fullAddress}</span>
                 <span className="popup_beer">{locatie.beer}</span>
-                <span className="popup_link" onClick={() => Navigate('')}>Bekijk review ➡️</span> {/* TODO nog linken */}
+                <span className="popup_rating">{"⭐".repeat(locatie.rating || 0)}</span>
+                <span className="popup_link" onClick={() => navigate('/', { state: { onlyMine: true } })}>Bekijk jouw posts ➡️</span>
               </div>
             </Popup>
           </PinMarker>
