@@ -35,7 +35,7 @@ export default function AgeCheck({ onVerified }) {
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
 
     if (age >= MIN_AGE) {
-      localStorage.setItem("age_verified", "true");
+      sessionStorage.setItem("age_verified", "true");
       onVerified();
     } else {
       window.location.href = TOO_YOUNG_URL;

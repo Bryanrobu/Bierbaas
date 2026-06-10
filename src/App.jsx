@@ -13,7 +13,7 @@ import AgeCheck from "./Components/AgeCheck.jsx";
 
 function App() {
   const [verified, setVerified] = useState(
-    localStorage.getItem("age_verified") == "true",
+    sessionStorage.getItem("age_verified") == "true",
   );
 
   return (
