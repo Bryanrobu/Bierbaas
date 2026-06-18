@@ -75,6 +75,7 @@ export default function Review() {
                 createdAt: Date.now(),
                 rating: rating,
                 user: user.uid,
+                userName: user.displayName,
                 publicity: publicity
             };
 

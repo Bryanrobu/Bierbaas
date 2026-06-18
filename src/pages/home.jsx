@@ -119,8 +119,6 @@ export default function Home() {
               <h3>{post.beer}</h3>
               <p>{"⭐".repeat(post.rating || 0)}</p>
               <p>{post.message}</p>
-              <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
-              <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
               {user && user.uid === post.user && (
                 <button className='home-buttons' onClick={() => deletePost(post.id)}>
                   Verwijder post
@@ -135,6 +133,8 @@ export default function Home() {
                 🗨️ {openComments[post.id] ? "Verberg" : "Comments"}
               </button>
 
+              <p>Post created by {post.userName} on <strong>{postDate?.toLocaleDateString() ?? "Onbekend"}</strong> at <strong>{postDate?.toLocaleTimeString() ?? "Onbekend"}</strong></p>
+
               {openComments[post.id] && (
                 <div className='comments-section'>
                   {comments[post.id]?.length == 0 && (
@@ -142,7 +142,8 @@ export default function Home() {
                   )}
                   {comments[post.id]?.map(comment => (
                     <div key = {comment.id} className='comment'>
-                      <span><strong>{comment.displayName}</strong>: {comment.text}</span>
+                      <span className='comment-text'><strong>{comment.displayName}</strong>: {comment.text}</span>
+                      <p style={{marginLeft: "auto"}}>{new Date(comment.createdAt).toLocaleString()}</p>
                       {user?.uid == comment.user && (
                         <button onClick={() => deleteComment(post.id, comment.id)}>🗑️</button>
                       )}

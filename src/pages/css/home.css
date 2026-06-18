@@ -140,6 +140,12 @@ body {
     gap: 8px;
 }
 
+.comment-text {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .comment-form {
     display: flex;
     gap: 8px;
