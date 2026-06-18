@@ -44,7 +44,7 @@ export default function Home() {
           collection(db, "posts", postId, "comments"),
           orderBy("createdAt", "asc")
         );
-        onSnapshot(q, (snapshot) => { //onsnapshot zorgt dat alleen de comments worden geladen als je ze openklapt zodat niet alles geladen hooft te worden
+        onSnapshot(q, (snapshot) => {
           setComments(prev => ({
             ...prev,
             [postId]: snapshot.docs.map(d => ({id: d.id, ...d.data()}))
@@ -122,16 +122,16 @@ export default function Home() {
               <p><strong>Datum:</strong> {postDate?.toLocaleDateString() ?? "Onbekend"}</p>
               <p><strong>Tijd:</strong> {postDate?.toLocaleTimeString() ?? "Onbekend"}</p>
               {user && user.uid === post.user && (
-                <button onClick={() => deletePost(post.id)}>
+                <button className='home-buttons' onClick={() => deletePost(post.id)}>
                   Verwijder post
                 </button>
               )}
 
-              <button onClick = {() => toggleLike(post)} disabled = {!user}>
+              <button className='home-buttons' onClick = {() => toggleLike(post)} disabled = {!user}>
                 {post.likes?.includes(user?.uid) ? "❤️" : "🤍"} {post.likes?.length ?? 0}
               </button>
 
-              <button onClick={() => toggleComments(post.id)}>
+              <button className='home-buttons' onClick={() => toggleComments(post.id)}>
                 🗨️ {openComments[post.id] ? "Verberg" : "Comments"}
               </button>
 
@@ -157,7 +157,7 @@ export default function Home() {
                         value={commentText[post.id] ?? ""}
                         onChange={(e) => setCommentsText(prev => ({...prev, [post.id]: e.target.value}))}
                       />
-                      <button onClick={() => addComment(post.id)}>Verstuur</button>
+                      <button className='home-buttons' onClick={() => addComment(post.id)}>Verstuur</button>
                     </div>
                   )}
                 </div>
