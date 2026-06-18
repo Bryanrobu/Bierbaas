@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import '../App.css'
 import './css/home.css'
 import {auth, db} from "../../config/firebase.js";
-import {collection, deleteDoc, doc, onSnapshot, orderBy, query} from 'firebase/firestore';
+import {arrayRemove, arrayUnion, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, addDoc} from 'firebase/firestore';
 import {onAuthStateChanged} from 'firebase/auth';
 import {useLocation} from 'react-router-dom';
 
@@ -13,12 +13,64 @@ export default function Home() {
   const location = useLocation();
   const [onlyMine, setonlyMine] = useState(location.state?.onlyMine || false);
 
+  const [openComments, setOpenComments] = useState({});
+  const [comments, setComments]= useState({});
+  const [commentText, setCommentsText] = useState({});
+
   async function deletePost(id) {
     try {
       await deleteDoc(doc(db, "posts", id));
     } catch (e) {
       console.error("Fout bij verwijderen: ", e);
     }
+  }
+
+  async function toggleLike(post){
+    if (!user) return;
+    const postRef = doc(db, "posts", post.id);
+    const heeftGeliked = post.likes?.includes(user.uid);
+
+    await updateDoc(postRef, {
+      likes: heeftGeliked ? arrayRemove(user.uid) : arrayUnion(user.uid)
+    });
+  }
+
+  function toggleComments(postId){
+    setOpenComments(prev => {
+      const gaatOpen = !prev[postId];
+
+      if (gaatOpen) {
+        const q = query(
+          collection(db, "posts", postId, "comments"),
+          orderBy("createdAt", "asc")
+        );
+        onSnapshot(q, (snapshot) => { //onsnapshot zorgt dat alleen de comments worden geladen als je ze openklapt zodat niet alles geladen hooft te worden
+          setComments(prev => ({
+            ...prev,
+            [postId]: snapshot.docs.map(d => ({id: d.id, ...d.data()}))
+          }));
+        });
+      }
+      return {...prev, [postId]: gaatOpen};
+    });
+  }
+
+  async function addComment(postId) {
+    const tekst = commentText[postId].trim(); //.trim haalt alle spaties aan het begin en eind weg
+    if (!tekst || !user) return;
+
+    await addDoc(collection(db, "posts", postId, "comments"), {
+      text: tekst,
+      user: user.uid,
+      displayName: user.displayName,
+      createdAt: new Date().toISOString()
+    });
+
+    setCommentsText(prev => ({...prev, [postId]: ""}));
+  }
+
+  async function deleteComment(postId, commentId) {
+    await deleteDoc(doc(db, "posts", postId, "comments", commentId));
   }
 
   useEffect(() => {
@@ -74,6 +126,43 @@ export default function Home() {
                   Verwijder post
                 </button>
               )}
+
+              <button onClick = {() => toggleLike(post)} disabled = {!user}>
+                {post.likes?.includes(user?.uid) ? "❤️" : "🤍"} {post.likes?.length ?? 0}
+              </button>
+
+              <button onClick={() => toggleComments(post.id)}>
+                🗨️ {openComments[post.id] ? "Verberg" : "Comments"}
+              </button>
+
+              {openComments[post.id] && (
+                <div className='comments-section'>
+                  {comments[post.id]?.length == 0 && (
+                    <p>Nog geen reacties</p>
+                  )}
+                  {comments[post.id]?.map(comment => (
+                    <div key = {comment.id} className='comment'>
+                      <span><strong>{comment.displayName}</strong>: {comment.text}</span>
+                      {user?.uid == comment.user && (
+                        <button onClick={() => deleteComment(post.id, comment.id)}>🗑️</button>
+                      )}
+                    </div>
+                  ))}
+
+                  {user && (
+                    <div className='comment-form'>
+                      <input 
+                        type="text"
+                        placeholder='Laat een reactie achter...'
+                        value={commentText[post.id] ?? ""}
+                        onChange={(e) => setCommentsText(prev => ({...prev, [post.id]: e.target.value}))}
+                      />
+                      <button onClick={() => addComment(post.id)}>Verstuur</button>
+                    </div>
+                  )}
+                </div>
+              )}
+                
             </div>
           );
         })}

@@ -98,3 +98,45 @@
 .home-page input[type="text"]:focus {
     border-color: #f5a623 ;
 }
+.comments-section {
+    margin-top: 14px;
+    border-top: 1px solid #e8890c44;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    gap: 8px;
+}
+
+.comment-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.comment-form input {
+    flex: 1;
+    padding: 7px 12px;
+    background: #1a0905;
+    border: 1px solid #e8890c;
+    border-radius: 8px;
+    color: #f0e0c0;
+    outline: none;
+    font-size: 14px;
+}
+
+.comment-form input::placeholder {
+    color: #a0784a;
+}
+
+.comment-form button {
+    margin-top: 0;
+    white-space: nowrap;
+}
