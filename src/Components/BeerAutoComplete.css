@@ -1,0 +1,32 @@
+.autocomplete-container {
+    position: relative;
+    display: inline-block;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    list-style: none;
+    background-color: #1a0905;
+    border: 1px solid #e8890c;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 100%;
+    border-radius: 16px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar {
+    display: none;
+}
+
+.autocomplete-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #c47a0a;
+    color: #f0e0c0;
+}
+
+.autocomplete-item:hover {
+    background-color: #e8890c;
+    color: #1a0905;
+}
